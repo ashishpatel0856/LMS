@@ -38,10 +38,10 @@ const Navbar = () => {
                                     <DropdownMenuGroup>
                                         <DropdownMenuLabel>My Account</DropdownMenuLabel>
                                         <DropdownMenuItem>
-                                         <Link to="/my-learning" >My Learning</Link>
+                                            <Link to="/my-learning">My Learning</Link>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem>
-                                            Edit Profile
+                                            <Link to="/profile">Edit Profile</Link>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem>
                                             Log out
@@ -94,13 +94,13 @@ const MobileNavbar = () => {
             <SheetContent className="flex flex-col">
                 <SheetHeader className="flex flex-row items-center justify-between  mt-10 ml-7">
                     <SheetTitle>E-Learning</SheetTitle>
-                    <DarkMode  />
+                    <DarkMode />
                 </SheetHeader>
 
                 <Separator className="mr-2" />
                 <nav className='flex flex-col space-y-4 ml-7'>
-                    <span>My Learning</span>
-                    <span>Edit profile</span>
+                    <Link to="/my-learning">My Learning</Link>
+                    <Link to="/profile">Edit Profile</Link>
                     <p>Log out</p>
                 </nav>
                 {
