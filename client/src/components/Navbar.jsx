@@ -8,6 +8,7 @@ import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHe
 import { Label } from './ui/label';
 import { Input } from './ui/input';
 import { Separator } from './ui/separator';
+import { Link } from 'react-router-dom';
 const Navbar = () => {
     const user = true;
     return (
@@ -37,7 +38,7 @@ const Navbar = () => {
                                     <DropdownMenuGroup>
                                         <DropdownMenuLabel>My Account</DropdownMenuLabel>
                                         <DropdownMenuItem>
-                                            My learning
+                                         <Link to="/my-learning" >My Learning</Link>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem>
                                             Edit Profile
@@ -91,7 +92,7 @@ const MobileNavbar = () => {
                 </Button>
             </SheetTrigger>
             <SheetContent className="flex flex-col">
-                <SheetHeader class="flex flex-row items-center justify-between  mt-10 ml-7">
+                <SheetHeader className="flex flex-row items-center justify-between  mt-10 ml-7">
                     <SheetTitle>E-Learning</SheetTitle>
                     <DarkMode  />
                 </SheetHeader>
