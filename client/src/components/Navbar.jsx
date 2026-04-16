@@ -26,13 +26,13 @@ const Navbar = () => {
                         user ? (
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-
-                                    <Avatar>
-                                        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                                        <AvatarFallback>CN</AvatarFallback>
-                                        <AvatarBadge className="bg-green-600 dark:bg-green-800" />
-                                    </Avatar>
-
+                                    <div className="cursor-pointer">
+                                        <Avatar>
+                                            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                                            <AvatarFallback>CN</AvatarFallback>
+                                            <AvatarBadge className="bg-green-600 dark:bg-green-800" />
+                                        </Avatar>
+                                    </div>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="w-40" align="start">
                                     <DropdownMenuGroup>
@@ -40,11 +40,11 @@ const Navbar = () => {
                                         <DropdownMenuItem>
                                             <Link to="/my-learning">My Learning</Link>
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem>
+                                        <DropdownMenuItem asChild>
                                             <Link to="/profile">Edit Profile</Link>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem>
-                                            Log out
+                                            <Link to="/logout">Logout</Link>
                                         </DropdownMenuItem>
                                     </DropdownMenuGroup>
                                     <DropdownMenuSeparator />
@@ -101,11 +101,11 @@ const MobileNavbar = () => {
                 <nav className='flex flex-col space-y-4 ml-7'>
                     <Link to="/my-learning">My Learning</Link>
                     <Link to="/profile">Edit Profile</Link>
-                    <p>Log out</p>
+                    <Link to="/logout">Log out</Link>
                 </nav>
                 {
                     role === "instructor" && (
-                        <Button className="w-75% mx-15 flex justify-center" type="submit">Dashboard</Button>
+                        <Button className="w-3/4 mx-auto flex justify-center" type="submit">Dashboard</Button>
 
                     )
                 }

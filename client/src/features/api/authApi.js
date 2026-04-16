@@ -7,7 +7,14 @@ export const authApi = createApi({
     reducerPath: "authApi",
     baseQuery: fetchBaseQuery({
         baseUrl: USER_API,
-        credentials: "include"
+        credentials: "include",
+        prepareHeaders: (headers, { getState }) => {
+            const token = getState().auth?.token || localStorage.getItem('token');
+            if (token) {
+                headers.set('Authorization', `Bearer ${token}`);
+            }
+            return headers;
+        }
     }),
 
     endpoints: (builder) => ({
@@ -25,22 +32,32 @@ export const authApi = createApi({
                 method: "POST",
                 body: inputData
             }),
-
             async onQueryStarted(_, { queryFulfilled, dispatch }) {
                 try {
                     const result = await queryFulfilled;
-                    dispatch(userLoggedIn({ user: result.data.user }));
+                    dispatch(userLoggedIn({ 
+                        user: result.data.user,
+                        token: result.data.token 
+                    }));
                 } catch (error) {
                     console.log(error);
                 }
             }
         }),
 
-
         loadUser: builder.query({
             query: () => ({
-                url:"profile",
-                method:"GET"
+                url: "profile",
+                method: "GET"
+            })
+        }),
+
+        updateUser: builder.mutation({
+            query: (formData) => ({
+                url:"/profile/update",
+                method:"PUT",
+                body:"formData",
+                credentials:"include"
             })
         })
     })
@@ -49,5 +66,6 @@ export const authApi = createApi({
 export const {
     useRegisterUserMutation,
     useLoginUserMutation,
-    useLoadUserQuery
+    useLoadUserQuery,
+    useUpdateUserMutation
 } = authApi;

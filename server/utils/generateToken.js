@@ -4,7 +4,7 @@ export const generateToken = (res, user, message) => {
     const token = jwt.sign(
         { userId: user._id },
         process.env.SECRET_KEY,
-        { expiresIn: '1d' } // 24hours
+        { expiresIn: '1d' }
     );
 
     return res
@@ -12,10 +12,12 @@ export const generateToken = (res, user, message) => {
         .cookie("token", token, {
             httpOnly: true,
             sameSite: 'strict',
-            maxAge: 24 * 60 * 60 * 1000,// expriations 1d
-        }).json({
-            success:true,
+            maxAge: 24 * 60 * 60 * 1000,
+        })
+        .json({
+            success: true,
             message,
-            user
+            user,
+            token: token 
         });
 };
