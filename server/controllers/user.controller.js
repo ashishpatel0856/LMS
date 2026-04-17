@@ -98,65 +98,85 @@ export const logout = async (req, res) => {
 
 export const getUserProfile = async (req, res) => {
     try {
-        const userId = req.id;
+        const userId = req.userId;
+
         const user = await User.findById(userId).select("-password");
+
         if (!user) {
             return res.status(404).json({
                 message: "Profile not found",
                 success: false
-            })
+            });
         }
+
         return res.status(200).json({
             success: true,
             user
-        })
-    } catch {
+        });
+
+    } catch (error) {
         console.log(error);
         return res.status(500).json({
             success: false,
-            message: "Failed to register"
-        })
+            message: "Failed to fetch profile"
+        });
     }
-}
+};
+
+
 
 export const updatedProfile = async (req, res) => {
     try {
-        const userId = req.id;
-        const { name } = req.body;
+        const userId = req.userId;
+
+        const name = req.body?.name;
         const profilePhoto = req.file;
+
         const user = await User.findById(userId);
 
         if (!user) {
             return res.status(404).json({
                 message: "User not found",
                 success: false
-            })
+            });
         }
 
-        // extract public id of the old image from the url is it exists;
+        let photoUrl = user.photoUrl;
+
+        // delete old image if exists
         if (user.photoUrl) {
             const publicId = user.photoUrl.split("/").pop().split(".")[0];
-            deleteMediaFormCloudinary(publicId);
+            await deleteMediaFormCloudinary(publicId);
         }
 
-        // upload new photo
-        const cloudResponse = await uploadMedia(profilePhoto.path);
-        const photoUrl = cloudResponse.secure_url;
+        // upload new image (if provided)
+        if (profilePhoto) {
+            const cloudResponse = await uploadMedia(profilePhoto.path);
+            photoUrl = cloudResponse.secure_url;
+        }
 
-        const updatedData = { name, photoUrl };
-        const updatedUser = await User.findByIdAndUpdate(userId, updatedData, { new: true }).select("-password");
+        const updatedData = {
+            name: name || user.name,
+            photoUrl
+        };
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            updatedData,
+            { new: true }
+        ).select("-password");
 
         return res.status(200).json({
             success: true,
             user: updatedUser,
-            message: "Profile updated successfully."
+            message: "Profile updated successfully"
+        });
 
-        })
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             success: false,
-            message: "User not found"
-        })
+            message: "Update failed"
+        });
     }
-}
+};
