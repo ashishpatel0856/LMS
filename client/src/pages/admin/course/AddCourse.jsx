@@ -1,6 +1,6 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Select,
   SelectContent,
@@ -12,9 +12,33 @@ import {
 } from "@/components/ui/select"
 import { Button } from '@/components/ui/button'
 import { useNavigate } from 'react-router-dom'
+import { Loader2 } from 'lucide-react'
+import { useCreateCourseMutation } from '@/features/api/courseApi'
+import { toast } from 'sonner'
 
 const AddCourse = () => {
-  const navigate= useNavigate()
+  const [courseTitle,setCourseTitle] = useState("");
+  const [category,setCotegory] = useState("");
+  const [createCourse,{data,isLoading,error,isSuccess}] = useCreateCourseMutation();
+  const navigate= useNavigate();
+  
+  const getSelectCotegory = (value) => {
+        setCotegory(value);
+  }
+
+  const createCourseHandler = async () => {
+    await createCourse({courseTitle,category})
+  };
+
+  // for displaing toast
+  useEffect(() =>{
+    if(isSuccess){
+      toast.success(data?.message || "Course created");
+      navigate("/admin/course");
+    }
+  },[isSuccess,error]);
+
+  
   return (
     <div className='flex-1 mx-10'>
       <div className='mb-4'>
@@ -26,7 +50,8 @@ const AddCourse = () => {
           <Label>Title</Label>
           <Input
             type='text'
-            name="courseTitle"
+            value={courseTitle}
+            onChange={(e) => setCourseTitle(e.target.value)}
             placeholder="Your Course Name"
           />
         </div>
@@ -36,18 +61,18 @@ const AddCourse = () => {
 
 
 
-          <Select>
+          <Select onValueChange = {getSelectCotegory} >
             <SelectTrigger className="w-full max-w-48">
               <SelectValue placeholder="Select a Category" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>Category</SelectLabel>
-                <SelectItem value="apple">Apple</SelectItem>
-                <SelectItem value="banana">Banana</SelectItem>
-                <SelectItem value="blueberry">Blueberry</SelectItem>
-                <SelectItem value="grapes">Grapes</SelectItem>
-                <SelectItem value="pineapple">Pineapple</SelectItem>
+                <SelectItem value="apple">Spring boot</SelectItem>
+                <SelectItem value="banana">React.js</SelectItem>
+                <SelectItem value="blueberry">Nodejs</SelectItem>
+                <SelectItem value="grapes">Data Science</SelectItem>
+                <SelectItem value="pineapple">Machine Learning</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
@@ -56,8 +81,17 @@ const AddCourse = () => {
         </div>
 
         <div className='flex items-center gap-2'>
-          <Button variant='outline' onClick={() => navigate()} >Back</Button>
-          <Button>Create</Button>
+          <Button variant='outline' onClick={() => navigate("/admin/course")} >Back</Button>
+          <Button disabled={isLoading} onClick={createCourseHandler} >
+            {
+              isLoading ? (
+                <>
+                <Loader2 className='mr-2 h-4 w-4 animate-spin'/>
+                Please wait...
+                </>
+              ): "Create"
+            }
+          </Button>
         </div>
 
       </div>
