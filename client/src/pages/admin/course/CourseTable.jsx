@@ -10,9 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import React from 'react'
-
-const CourseTable = () => {
-  
+import { useNavigate } from 'react-router-dom'
 const invoices = [
   {
     invoice: "INV001",
@@ -57,19 +55,25 @@ const invoices = [
     paymentMethod: "Credit Card",
   },
 ]
+
+const CourseTable = () => {
+  
+  const navigate = useNavigate();
+
   return (
+    
     <div>
-      <Button>Create a new Course</Button>
+      <Button onClick={() =>navigate(`create`)} >Create a new Course</Button>
 
 
     <Table>
       <TableCaption>A list of your recent invoices.</TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[100px]">Invoice</TableHead>
+          <TableHead className="w-[100px]">Price</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Method</TableHead>
-          <TableHead className="text-right">Amount</TableHead>
+          <TableHead className="text-right">Action</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
