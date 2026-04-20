@@ -1,9 +1,59 @@
+import RichTextEditor from '@/components/RichTextEditor';
 import { Button } from '@/components/ui/button'
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import React from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Loader2 } from 'lucide-react';
+import React, { useState } from 'react'
+import { data, useNavigate } from 'react-router-dom';
+
 
 const CourseTab = () => {
-    const isPublished = true;
+    const [input, setInput] = useState({
+        courseTitle: "",
+        subTitle: "",
+        description: "",
+        category: "",
+        courseLevel: "",
+        coursePrice: "",
+        courseThumbnail: ""
+    });
+
+    const [previewThumbnail,setPreviewThumbnail] =useState("");
+
+    const changeEventHandler = (e) => {
+        const { name, value } = e.target;
+        setInput({ ...input, [name]: value });
+    }
+
+    const selectCategory = (value) => {
+        setInput({...input,category:value});
+    }
+
+    const selectCourseLevel = (value) => {
+        setInput({...input,courseLevel:value});
+    }
+
+    //get file
+    const selectThumbnail = (e) => {
+       const file = e.target.files?.[0];
+       if(file){
+        setInput({...input,courseThumbnail:file});
+        const fileReader = new FileReader();
+        fileReader.onloadend = () => setPreviewThumbnail(fileReader.result);
+        fileReader.readAsDataURL(file);
+       }
+    }
+
+
+    const updateCourseHandler = () => {
+        console.log(data);
+    }
+
+    const isPublished = false;
+    const isLoading = false;
+    const navigate = useNavigate();
     return (
         <Card>
             <CardHeader className='flex flex-row justify-between'>
@@ -23,6 +73,114 @@ const CourseTab = () => {
                     <Button>Remove Course</Button>
                 </div>
             </CardHeader>
+
+            <CardContent>
+                <div className='space-y-4 mt-5'>
+                    <Label>Title</Label>
+                    <Input
+                        type="text"
+                        name="courseTitle"
+                        value={input.courseTitle}
+                        onChange={changeEventHandler}
+                        placeholder="Ex. FullStack Developer."
+                    />
+                </div>
+
+                <div className='space-y-4 mt-5'>
+                    <Label>SubTitle</Label>
+                    <Input
+                        type="text"
+                        name="subTitle"
+                        value={input.subTitle}
+                        onChange={changeEventHandler}
+                        placeholder="Ex. Become a Fullstack developer from zero to hero in 2 months."
+                    />
+                </div>
+
+                <div className='space-y-4 mt-5'>
+                    <Label>Description</Label>
+                    <RichTextEditor input={input} setInput={setInput} />
+                </div>
+
+                <div className='flex items-center gap-5'>
+                    <div>
+                        <Label>Category</Label>
+                        <Select onValueChange={selectCategory} >
+                            <SelectTrigger className="w-full max-w-48">
+                                <SelectValue placeholder="Select a Category" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectLabel>Category</SelectLabel>
+                                    <SelectItem value="apple">Spring boot</SelectItem>
+                                    <SelectItem value="banana">React.js</SelectItem>
+                                    <SelectItem value="blueberry">Nodejs</SelectItem>
+                                    <SelectItem value="grapes">Data Science</SelectItem>
+                                    <SelectItem value="pineapple">Machine Learning</SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <div>
+                        <Label>Course Level</Label>
+                        <Select onValueChange={selectCourseLevel} >
+                            <SelectTrigger className="w-full max-w-48">
+                                <SelectValue placeholder="Select a Course Level" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectLabel>Course Level</SelectLabel>
+                                    <SelectItem value="Beginner">Beginner</SelectItem>
+                                    <SelectItem value="Medium">Medium</SelectItem>
+                                    <SelectItem value="Advance">Advance</SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <div>
+                        <Label>Price in (INR)</Label>
+                        <Input
+                            type="number"
+                            name="coursePrice"
+                            value={input.coursePrice}
+                            onChange={changeEventHandler}
+                            placeholder="199"
+                            className="w-fit"
+                        />
+                    </div>
+                </div>
+                <div>
+                    <Label>Course Thumbnail</Label>
+                    <Input
+                    onChange={selectThumbnail}
+                        type="file"
+                        accept="image/*"
+                        className="w-fit"
+                    />
+                    {
+                        previewThumbnail && (
+                            <img src={previewThumbnail} className='e-64 my-2 ' alt='Course Thumbnail' />
+                        )
+                    }
+                </div>
+
+                <div>
+                    <Button onClick={() => navigate("/admin/course")} variant='outline'>Cancel</Button>
+                    <Button disabled={isLoading} onClick={updateCourseHandler} >
+                        {
+                            isLoading ? (
+                                <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Please wait
+                                </>
+                            ): "Save"
+                        }
+                    </Button>
+                </div>
+
+            </CardContent>
         </Card>
     )
 }
