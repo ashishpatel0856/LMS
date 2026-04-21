@@ -20,7 +20,7 @@ const CourseTab = () => {
         courseThumbnail: ""
     });
 
-    const [previewThumbnail,setPreviewThumbnail] =useState("");
+    const [previewThumbnail, setPreviewThumbnail] = useState("");
 
     const changeEventHandler = (e) => {
         const { name, value } = e.target;
@@ -28,22 +28,22 @@ const CourseTab = () => {
     }
 
     const selectCategory = (value) => {
-        setInput({...input,category:value});
+        setInput({ ...input, category: value });
     }
 
     const selectCourseLevel = (value) => {
-        setInput({...input,courseLevel:value});
+        setInput({ ...input, courseLevel: value });
     }
 
     //get file
     const selectThumbnail = (e) => {
-       const file = e.target.files?.[0];
-       if(file){
-        setInput({...input,courseThumbnail:file});
-        const fileReader = new FileReader();
-        fileReader.onloadend = () => setPreviewThumbnail(fileReader.result);
-        fileReader.readAsDataURL(file);
-       }
+        const file = e.target.files?.[0];
+        if (file) {
+            setInput({ ...input, courseThumbnail: file });
+            const fileReader = new FileReader();
+            fileReader.onloadend = () => setPreviewThumbnail(fileReader.result);
+            fileReader.readAsDataURL(file);
+        }
     }
 
 
@@ -154,7 +154,7 @@ const CourseTab = () => {
                 <div>
                     <Label>Course Thumbnail</Label>
                     <Input
-                    onChange={selectThumbnail}
+                        onChange={selectThumbnail}
                         type="file"
                         accept="image/*"
                         className="w-fit"
@@ -172,10 +172,10 @@ const CourseTab = () => {
                         {
                             isLoading ? (
                                 <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Please wait
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Please wait
                                 </>
-                            ): "Save"
+                            ) : "Save"
                         }
                     </Button>
                 </div>
