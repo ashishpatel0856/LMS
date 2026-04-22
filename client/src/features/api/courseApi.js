@@ -19,7 +19,7 @@ export const courseApi = createApi({
         method: "POST",
         body: { courseTitle, category },
       }),
-      invalidatesTags: ["Creator_Course"], 
+      invalidatesTags: ["Creator_Course"],
     }),
 
     getCreatorCourse: builder.query({
@@ -30,10 +30,20 @@ export const courseApi = createApi({
       providesTags: ["Creator_Course"],
     }),
 
+
+    editCourse: builder.mutation({
+      query: ({formData,courseId}) => ({
+        url: `/${courseId}`,
+        method: "PUT",
+        body: formData
+      })
+    })
+
   }),
 });
 
 export const {
   useCreateCourseMutation,
   useGetCreatorCourseQuery,
+  useEditCourseMutation
 } = courseApi;
