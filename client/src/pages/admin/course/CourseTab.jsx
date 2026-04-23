@@ -3,15 +3,24 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useEditCourseMutation } from '@/features/api/courseApi';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from '@/components/ui/select';
+import {
+    useEditCourseMutation,
+    useGetCourseByIdQuery
+} from '@/features/api/courseApi';
 import { Loader2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
-import { data, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
-
 const CourseTab = () => {
+
     const [input, setInput] = useState({
         courseTitle: "",
         subTitle: "",
@@ -23,59 +32,88 @@ const CourseTab = () => {
     });
 
     const [previewThumbnail, setPreviewThumbnail] = useState("");
-    const [editCourse, { data, isLoading, isSuccess, error }] = useEditCourseMutation();
-    const params = useParams();
-    const courseId = params.courseId;
+
+    const { courseId } = useParams();
+    const navigate = useNavigate();
+
+    const { data, isLoading: loadingCourse } =
+        useGetCourseByIdQuery(courseId,{refetchOnMountOrArgChange:true});
+
+    const course = data?.course;
+
+    const [editCourse, { isLoading, isSuccess, error }] =
+        useEditCourseMutation();
+
+    useEffect(() => {
+        if (course) {
+            setInput({
+                courseTitle: course.courseTitle || "",
+                subTitle: course.subTitle || "",
+                description: course.description || "",
+                category: course.category || "",
+                courseLevel: course.courseLevel || "",
+                coursePrice: course.coursePrice?.toString() || "",
+                courseThumbnail: ""
+            });
+
+            setPreviewThumbnail(course.courseThumbnail);
+        }
+    }, [course]);
 
     const changeEventHandler = (e) => {
         const { name, value } = e.target;
-        setInput({ ...input, [name]: value });
-    }
+        setInput(prev => ({ ...prev, [name]: value }));
+    };
 
     const selectCategory = (value) => {
-        setInput({ ...input, category: value });
-    }
+        setInput(prev => ({ ...prev, category: value }));
+    };
 
     const selectCourseLevel = (value) => {
-        setInput({ ...input, courseLevel: value });
-    }
+        setInput(prev => ({ ...prev, courseLevel: value }));
+    };
 
-    //get file
     const selectThumbnail = (e) => {
         const file = e.target.files?.[0];
         if (file) {
-            setInput({ ...input, courseThumbnail: file });
-            const fileReader = new FileReader();
-            fileReader.onloadend = () => setPreviewThumbnail(fileReader.result);
-            fileReader.readAsDataURL(file);
-        }
-    }
+            setInput(prev => ({ ...prev, courseThumbnail: file }));
 
+            const reader = new FileReader();
+            reader.onloadend = () => setPreviewThumbnail(reader.result);
+            reader.readAsDataURL(file);
+        }
+    };
 
     const updateCourseHandler = async () => {
         const formData = new FormData();
+
         formData.append("courseTitle", input.courseTitle);
         formData.append("subTitle", input.subTitle);
         formData.append("description", input.description);
         formData.append("category", input.category);
         formData.append("courseLevel", input.courseLevel);
         formData.append("coursePrice", input.coursePrice);
-        formData.append("courseThumbnail", input.courseThumbnail);
 
-        await editCourse(formData,courseId);
-    }
+        if (input.courseThumbnail) {
+            formData.append("courseThumbnail", input.courseThumbnail);
+        }
+
+        await editCourse({ formData, courseId });
+    };
 
     useEffect(() => {
         if (isSuccess) {
-            toast.success(data.message || 'Course updated.')
+            toast.success("Course updated successfully");
+            navigate("/admin/course");
         }
         if (error) {
-            toast.error(error.data.message || "failed to update course ");
+            toast.error(error?.data?.message || "Update failed");
         }
     }, [isSuccess, error]);
 
+    if (loadingCourse) return <p>Loading...</p>;
+
     const isPublished = false;
-    const navigate = useNavigate();
     return (
         <Card>
             <CardHeader className='flex flex-row justify-between'>
@@ -97,114 +135,117 @@ const CourseTab = () => {
             </CardHeader>
 
             <CardContent>
-                <div className='space-y-4 mt-5'>
+
+                <div className='mt-4'>
                     <Label>Title</Label>
                     <Input
-                        type="text"
                         name="courseTitle"
                         value={input.courseTitle}
                         onChange={changeEventHandler}
-                        placeholder="Ex. FullStack Developer."
                     />
                 </div>
 
-                <div className='space-y-4 mt-5'>
+                <div className='mt-4'>
                     <Label>SubTitle</Label>
                     <Input
-                        type="text"
                         name="subTitle"
                         value={input.subTitle}
                         onChange={changeEventHandler}
-                        placeholder="Ex. Become a Fullstack developer from zero to hero in 2 months."
                     />
                 </div>
 
-                <div className='space-y-4 mt-5'>
+                <div className='mt-4'>
                     <Label>Description</Label>
                     <RichTextEditor input={input} setInput={setInput} />
                 </div>
 
-                <div className='flex items-center gap-5'>
+                <div className='flex gap-5 mt-5'>
+
                     <div>
                         <Label>Category</Label>
-                        <Select onValueChange={selectCategory} >
-                            <SelectTrigger className="w-full max-w-48">
-                                <SelectValue placeholder="Select a Category" />
+                        <Select value={input.category} onValueChange={selectCategory}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select Category" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectGroup>
-                                    <SelectLabel>Category</SelectLabel>
-                                    <SelectItem value="apple">Spring boot</SelectItem>
-                                    <SelectItem value="banana">React.js</SelectItem>
-                                    <SelectItem value="blueberry">Nodejs</SelectItem>
-                                    <SelectItem value="grapes">Data Science</SelectItem>
-                                    <SelectItem value="pineapple">Machine Learning</SelectItem>
-                                </SelectGroup>
+                                <SelectItem value="Spring boot">Spring boot</SelectItem>
+                                <SelectItem value="React.js">React.js</SelectItem>
+                                <SelectItem value="Nodejs">Nodejs</SelectItem>
+                                <SelectItem value="Data Science">Data Science</SelectItem>
+                                <SelectItem value="Machine Learning">Machine Learning</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
 
                     <div>
                         <Label>Course Level</Label>
-                        <Select onValueChange={selectCourseLevel} >
-                            <SelectTrigger className="w-full max-w-48">
-                                <SelectValue placeholder="Select a Course Level" />
+                        <Select value={input.courseLevel} onValueChange={selectCourseLevel}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select Level" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectGroup>
-                                    <SelectLabel>Course Level</SelectLabel>
-                                    <SelectItem value="Beginner">Beginner</SelectItem>
-                                    <SelectItem value="Medium">Medium</SelectItem>
-                                    <SelectItem value="Advance">Advance</SelectItem>
-                                </SelectGroup>
+                                <SelectItem value="Beginner">Beginner</SelectItem>
+                                <SelectItem value="Medium">Medium</SelectItem>
+                                <SelectItem value="Advance">Advance</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
 
+                    {/* PRICE */}
                     <div>
-                        <Label>Price in (INR)</Label>
+                        <Label>Price</Label>
                         <Input
                             type="number"
                             name="coursePrice"
                             value={input.coursePrice}
                             onChange={changeEventHandler}
-                            placeholder="199"
-                            className="w-fit"
                         />
                     </div>
-                </div>
-                <div>
-                    <Label>Course Thumbnail</Label>
-                    <Input
-                        onChange={selectThumbnail}
-                        type="file"
-                        accept="image/*"
-                        className="w-fit"
-                    />
-                    {
-                        previewThumbnail && (
-                            <img src={previewThumbnail} className='e-64 my-2 ' alt='Course Thumbnail' />
-                        )
-                    }
+
                 </div>
 
-                <div>
-                    <Button onClick={() => navigate("/admin/course")} variant='outline'>Cancel</Button>
-                    <Button disabled={isLoading} onClick={updateCourseHandler} >
-                        {
-                            isLoading ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Please wait
-                                </>
-                            ) : "Save"
-                        }
+                {/* THUMBNAIL */}
+                <div className='mt-5'>
+                    <Label>Thumbnail</Label>
+                    <Input type="file" onChange={selectThumbnail} />
+
+                    {previewThumbnail && (
+                        <img
+                            src={previewThumbnail}
+                            alt="preview"
+                            className="w-40 mt-2 rounded"
+                        />
+                    )}
+                </div>
+
+                {/* BUTTONS */}
+                <div className='mt-5 flex gap-3'>
+                    <Button
+                        variant='outline'
+                        onClick={() => navigate("/admin/course")}
+                    >
+                        Cancel
+                    </Button>
+
+                    <Button onClick={updateCourseHandler} disabled={isLoading}>
+                        {isLoading ? (
+                            <>
+                                <Loader2 className="animate-spin mr-2" />
+                                Saving...
+                            </>
+                        ) : "Save"}
                     </Button>
                 </div>
 
             </CardContent>
         </Card>
-    )
-}
+    );
+};
 
-export default CourseTab
+export default CourseTab;
+
+
+
+1261551964
+
+16/08/2010
