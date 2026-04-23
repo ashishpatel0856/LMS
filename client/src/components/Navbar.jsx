@@ -163,7 +163,6 @@ const MobileNavbar = ({ logoutHandler }) => {
                     >
                         Logout
                     </Button>
-
                 </nav>
 
                 {role === "instructor" && (

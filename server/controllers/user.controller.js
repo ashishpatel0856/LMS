@@ -2,7 +2,7 @@ import { User } from "../models/user.model.js";
 import bcrypt from "bcrypt";
 import { generateToken } from "../utils/generateToken.js";
 import { deleteMediaFormCloudinary, uploadMedia } from "../utils/cloudinary.js";
-
+import { Course } from "../models/course.model.js";
 
 export const register = async (req, res) => {
     try {
@@ -183,45 +183,45 @@ export const updatedProfile = async (req, res) => {
 
 
 
-export const editCourse = async (req,res) => {
-    try{
-         const courseId = req.params.courseId;
-         const {courseTitle, subTitle,description,category,courseLevel,coursePrice} = req.body;
-         const thumbnail = req.file;
+export const editCourse = async (req, res) => {
+    try {
+        const courseId = req.params.courseId;
+        const { courseTitle, subTitle, description, category, courseLevel, coursePrice } = req.body ||{};
+        const thumbnail = req.file;
 
-         let course =await Course.findById(courseId);
-         if(!course){
+        let course = await Course.findById(courseId);
+        if (!course) {
             return res
-            .status(404)
-            .json({
-                message:"course not found!"
-            })
-         }
+                .status(404)
+                .json({
+                    message: "course not found!"
+                })
+        }
 
-         let courseThumbnail;
-         if(thumbnail){
-            if(course.courseThumbnail){
+        let courseThumbnail;
+        if (thumbnail) {
+            if (course.courseThumbnail) {
                 const publicId = course.courseThumbnail.split("/").pop().split(".")[0];
-                 await deleteMediaFormCloudinary(publicId);// delete old images
+                await deleteMediaFormCloudinary(publicId);// delete old images
             }
 
             courseThumbnail = await uploadMedia(thumbnail.path);
-         }
+        }
 
-         // Uplaod a thumbnai on cloudinary
+        // Uplaod a thumbnai on cloudinary
 
-         const updatedData = {courseTitle, subTitle,description,category,courseLevel,coursePrice,courseThumbnail:courseThumbnail?.secure_url};
-         course = await Course.findByIdAndUpdate(courseId,updatedData,{new:true});
-         return res.status(200).json({
+        const updatedData = { courseTitle, subTitle, description, category, courseLevel, coursePrice, courseThumbnail: courseThumbnail?.secure_url };
+        course = await Course.findByIdAndUpdate(courseId, updatedData, { new: true });
+        return res.status(200).json({
             course,
-            message:"Course update successfully."
-         })
+            message: "Course update successfully."
+        })
 
-    } catch(error){
+    } catch (error) {
         console.log(error);
         return res
-        .status(500).json({
-            message:"Failed to create course."
-        })
+            .status(500).json({
+                message: "Failed to create course."
+            })
     }
 }

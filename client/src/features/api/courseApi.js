@@ -35,7 +35,8 @@ export const courseApi = createApi({
       query: ({formData,courseId}) => ({
         url: `/${courseId}`,
         method: "PUT",
-        body: formData
+        body: formData,
+           formData: true,
       })
     })
 
