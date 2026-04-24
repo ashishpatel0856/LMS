@@ -6,6 +6,7 @@ import { Loader2 } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
+import Lecture from './Lecture'
 
 const CreateLecture = () => {
     const [lectureTitle, setLectureTitle] = useState("");
@@ -13,15 +14,17 @@ const CreateLecture = () => {
     const courseId = params.courseId;
     const navigate = useNavigate();
     const [createLectue, { data, isLoading, isSuccess, error }] = useCreateLectureMutation();
-    const { data: lectureData, isLoading: lectureLoading, isError: lectureError } = useGetCourseLectureQuery();
+    const { data: lectureData, isLoading: lectureLoading, isError: lectureError ,refetch } = useGetCourseLectureQuery({courseId});
 
     const createLectureHandler = async () => {
         await createLectue({ lectureTitle, courseId });
+       
     };
 
 
     useEffect(() => {
         if (isSuccess) {
+             refetch();
             toast.success(data.message);
         }
         if (error) {
@@ -66,10 +69,12 @@ const CreateLecture = () => {
                             : lectureError ? (<p>Failed to load lectures.</p>)
                                 : lectureData.lectures.length === 0 ?
                                     <p>No lectures available</p> :
-                                    <Lecture />
+                                    lectureData.lectures.map((lecture, index) => (
+                                        <Lecture key={lecture._id} lecture={lecture} courseId={courseId} index ={index} />
+                                    ))
                     }
                 </div>
- 
+
             </div>
         </div>)
 }
