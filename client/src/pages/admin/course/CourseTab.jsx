@@ -138,7 +138,9 @@ const CourseTab = () => {
                     </CardTitle>
                 </div>
                 <div className='space-x-2' >
-                    <Button disabled={course.lectures.length == 0} onClick={() => publishStatusHandler(course?.isPublished ? "false" : "true")} variant='outline'>
+                    <Button
+                     disabled={course.lectures.length ===0} 
+                     onClick={() => publishStatusHandler(course?.isPublished ? "false" : "true")} variant='outline'>
                         {
                             course?.isPublished ?"UnPublished" : 'Public'
                         }

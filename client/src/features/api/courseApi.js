@@ -5,7 +5,7 @@ const COURSE_API = "http://localhost:8080/api/v1/course";
 
 export const courseApi = createApi({
   reducerPath: "courseApi",
-  tagTypes: ["Creator_Course","REFETCH_LECTURE"],
+  tagTypes: ["Creator_Course", "REFETCH_LECTURE"],
 
   baseQuery: fetchBaseQuery({
     baseUrl: COURSE_API,
@@ -22,6 +22,15 @@ export const courseApi = createApi({
       }),
       invalidatesTags: ["Creator_Course"],
     }),
+
+
+    getPublishedCourses: builder.query({
+      query: () => ({
+        url: "/published-courses",
+        method: "GET"
+      })
+    }),
+
 
     getCreatorCourse: builder.query({
       query: () => ({
@@ -61,36 +70,36 @@ export const courseApi = createApi({
         url: `/${courseId}/lecture`,
         method: "GET",
       }),
-      providesTags:["REFETCH_LECTURE"]
+      providesTags: ["REFETCH_LECTURE"]
     }),
 
     editLecture: builder.mutation({
       query: ({ lectureTitle, videoInfo, isPreviewFree, courseId, lectureId }) => ({
         url: `/${courseId}/lecture/${lectureId}`,
-          method:"POST",
-            body:{ lectureTitle, videoInfo, isPreviewFree }
+        method: "POST",
+        body: { lectureTitle, videoInfo, isPreviewFree }
       })
     }),
 
     removeLecture: builder.mutation({
       query: (lectureId) => ({
-        url:`/lecture/${lectureId}`,
-        method:"DELETE",
+        url: `/lecture/${lectureId}`,
+        method: "DELETE",
       }),
-      invalidatesTags:["REFETCH_LECTURE"]
+      invalidatesTags: ["REFETCH_LECTURE"]
     }),
 
     getLectureById: builder.query({
-      query:(lectureId) => ({
+      query: (lectureId) => ({
         url: `/lecture/${lectureId}`,
-        method:"GET"
+        method: "GET"
       })
     }),
 
     publishCourse: builder.mutation({
-      query:({courseId,query}) => ({
+      query: ({ courseId, query }) => ({
         url: `/${courseId}?publish=${query}`,
-        method:"PATCH"
+        method: "PATCH"
       })
     })
 
@@ -100,6 +109,7 @@ export const courseApi = createApi({
 export const {
   useCreateCourseMutation,
   useGetCreatorCourseQuery,
+  useGetPublishedCoursesQuery,
   useEditCourseMutation,
   useGetCourseByIdQuery,
   useCreateLectureMutation,
