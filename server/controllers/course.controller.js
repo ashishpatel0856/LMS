@@ -155,15 +155,10 @@ export const editLecture = async (req, res) => {
     }
 
     if (lectureTitle) lecture.lectureTitle = lectureTitle;
-
-    if (typeof isPreviewFree !== "undefined") {
+    if(videoInfo?.videoUrl) lecture.videoUrl = videoInfo.videoUrl;
+    if(videoInfo?.publicId) lecture.publicId = videoInfo.publicId;
+    // if(isPreviewFree) 
       lecture.isPreviewFree = isPreviewFree;
-    }
-
-    if (videoInfo) {
-      lecture.videoUrl = videoInfo.videoUrl;
-      lecture.publicId = videoInfo.publicId;
-    }
 
     await lecture.save();
 
@@ -176,7 +171,7 @@ export const editLecture = async (req, res) => {
     console.log(error); 
     res.status(500).json({
       success: false,
-      message: "Server error"
+      message: "Failed to edit lectures"
     });
   }
 };
@@ -229,5 +224,34 @@ export const getLectureById = async (req, res) => {
     return res.status(500).josn({
       message: "Failed to get lecture by id."
     })
+  }
+}
+
+
+// public or unpublic course logic
+
+export  const togglePublishCourse = async (req,res) => {
+  try {
+    const {courseId} = req.params;
+    const {publish} = req.query; // true,false
+    const course = await Course.findById(courseId)
+    if(!course) {
+      return res.status(404).json({
+        message:"course not found."
+      });
+    }
+    // public status based on the query parameter
+    course.isPublished = publish === "true";
+    await course.save();
+
+    const statusMessage = course.isPublished ? "Published":"Unpublished";
+    return res.status(200).json({
+      message:`Course is ${statusMessage}`
+    });
+  } catch (error) {
+     console.log(error);
+     return res.status(500).json({
+      message:"Failed to public or unpublic status"
+     })
   }
 }

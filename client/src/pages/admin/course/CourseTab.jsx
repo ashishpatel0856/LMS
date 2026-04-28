@@ -12,7 +12,8 @@ import {
 } from '@/components/ui/select';
 import {
     useEditCourseMutation,
-    useGetCourseByIdQuery
+    useGetCourseByIdQuery,
+    usePublishCourseMutation
 } from '@/features/api/courseApi';
 import { Loader2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
@@ -36,7 +37,7 @@ const CourseTab = () => {
     const { courseId } = useParams();
     const navigate = useNavigate();
 
-    const { data, isLoading: loadingCourse } =
+    const { data, isLoading: loadingCourse,refetch } =
         useGetCourseByIdQuery(courseId,{refetchOnMountOrArgChange:true});
 
     const course = data?.course;
@@ -44,6 +45,7 @@ const CourseTab = () => {
     const [editCourse, { isLoading, isSuccess, error }] =
         useEditCourseMutation();
 
+    const [publishCourse,{}] = usePublishCourseMutation();
     useEffect(() => {
         if (course) {
             setInput({
@@ -113,7 +115,18 @@ const CourseTab = () => {
 
     if (loadingCourse) return <p>Loading...</p>;
 
-    const isPublished = false;
+
+    const publishStatusHandler = async (action) => {
+     try {
+        const response = await publishCourse({courseId,query:action});
+        if(response.data){
+            refetch()
+            toast.success(response.data.message);
+        }
+     } catch (error) {
+        toast.error("failed to publish or unpublish course");
+     }
+    }
     return (
         <Card>
             <CardHeader className='flex flex-row justify-between'>
@@ -125,9 +138,9 @@ const CourseTab = () => {
                     </CardTitle>
                 </div>
                 <div className='space-x-2' >
-                    <Button variant='outline'>
+                    <Button disabled={course.lectures.length == 0} onClick={() => publishStatusHandler(course?.isPublished ? "false" : "true")} variant='outline'>
                         {
-                            isPublished ? "UnPublished" : 'Public'
+                            course?.isPublished ?"UnPublished" : 'Public'
                         }
                     </Button>
                     <Button>Remove Course</Button>
