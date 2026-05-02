@@ -6,7 +6,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 export const createCheckoutSession = async (req, res) => {
     try {
         const userId = req.id;
-        const { couseId } = req.body;
+        const { courseId } = req.body;
 
         const course = await Course.findById(courseId);
         if (!course) return res.status(404).json({
@@ -22,7 +22,7 @@ export const createCheckoutSession = async (req, res) => {
         });
 
         // create a stripe checkout sesson
-        const sesson = await stripe.checkout.sessions.create({
+        const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
             line_items: [
                 {
@@ -32,15 +32,15 @@ export const createCheckoutSession = async (req, res) => {
                             name: course.courseTitle,
                             images: [course.courseThumbnail],
                         },
-                        util_amount: course.coursePrice * 100 // amount in paise
+                        unit_amount: course.coursePrice * 100 // amount in paise
                     },
                     quantity: 1,
                 },
             ],
 
             mode: "payment",
-            success_url: `${process.env.FRONTEND_URL}/course-progress/${courseId}`,
-            cancel_url: `${process.env.FRONTEND_URL}/course-details/${courseId}`,
+            success_url: `http://localhost:5173/course-progress/${courseId}`,
+            cancel_url: `http://localhost:5173/course-details/${courseId}`,
             metadata: {
                 courseId: courseId,
                 userId: userId,
