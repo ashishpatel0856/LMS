@@ -7,7 +7,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 
 import mediaRoute from './routes/media.route.js'
-
+import purchaseRoute from "./routes/purchaseCourse.route.js"
 dotenv.config();
 
 connectDB();
@@ -29,6 +29,7 @@ app.use(
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/course",courseRoute);
 app.use("/api/v1/media",mediaRoute);
+app.use("/api/v1/purchase", purchaseRoute);
 
 
 app.listen(PORT, () => {
