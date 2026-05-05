@@ -8,6 +8,8 @@ import cors from "cors";
 
 import mediaRoute from './routes/media.route.js'
 import purchaseRoute from "./routes/purchaseCourse.route.js"
+import CourseProgressRoute from "./routes/cousreProgress.route.js"
+
 dotenv.config();
 
 connectDB();
@@ -30,6 +32,7 @@ app.use("/api/v1/user", userRoute);
 app.use("/api/v1/course",courseRoute);
 app.use("/api/v1/media",mediaRoute);
 app.use("/api/v1/purchase", purchaseRoute);
+app.use("/api/v1/progress",CoursePrgressRoute);
 
 
 app.listen(PORT, () => {
