@@ -23,12 +23,14 @@ export const courseProgressApi = createApi({
             }),
         }),
 
+
         completeCourse: builder.mutation({
             query: (courseId) => ({
                 url: `/${courseId}/complete`,
                 method: 'POST'
             })
         }),
+
 
         inCompleteCourse: builder.mutation({
             query: (courseId) => ({
