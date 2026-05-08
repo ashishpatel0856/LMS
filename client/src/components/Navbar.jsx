@@ -9,7 +9,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from './ui/dropdown-menu';
-
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarBadge, AvatarFallback, AvatarImage } from './ui/avatar';
 import DarkMode from '@/DarkMode';
@@ -53,7 +52,7 @@ const Navbar = () => {
                 <div className='flex items-center gap-2'>
                     <School size={30} />
                     <Link to='/'>
-                    <h1 className='font-extrabold text-2xl'>E-Learning</h1>
+                        <h1 className='font-extrabold text-2xl'>E-Learning</h1>
                     </Link>
                 </div>
 
@@ -92,7 +91,7 @@ const Navbar = () => {
                                         <DropdownMenuSeparator />
 
                                         <DropdownMenuItem>
-                                            Dashboard
+                                            <Link to="/admin/dashboard" >Dashboard</Link>
                                         </DropdownMenuItem>
                                     </>
                                 )}
@@ -169,11 +168,14 @@ const MobileNavbar = ({ logoutHandler }) => {
                 </nav>
 
                 {role === "instructor" && (
-                    <Button className="w-3/4 mx-auto mt-6">
-                        Dashboard
-                    </Button>
+                    <Link to="/admin/dashboard">
+                        <Button className="w-3/4 mx-auto mt-6">
+                            Dashboard
+                        </Button>
+                    </Link>
                 )}
             </SheetContent>
+
         </Sheet>
     );
 };

@@ -29,7 +29,7 @@ export const courseApi = createApi({
           query: ({searchQuery,categories,sortByPrice}) => {
 
             // build query string
-            let queryString =`/search?query =${encodeURIComponent(searchQuery)}`;
+            let queryString =`/search?query=${encodeURIComponent(searchQuery)}`;
 
             // append category
             if(categories && categories.length > 0){

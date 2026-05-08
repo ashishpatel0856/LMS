@@ -31,18 +31,29 @@ const Filter = ({ handleFilterChange }) => {
     const [sortByPrice, setSortByPrice] = useState("");
 
     const handleCategoryChange = (categoryId) => {
-        setSelectedCategories((preCategories) => {
-            const newCategories = prevCategories.includes(categoryId);
-        })
-    }
+        setSelectedCategories((prevCategories) => {
+            const newCategories = prevCategories.includes(categoryId)
+                ? prevCategories.filter((id) => id !== categoryId)
+                : [...prevCategories, categoryId];
 
+                handleFilterChange(newCategories,sortByPrice);
+                return newCategories;
+        });
+    };
+
+    
+
+    const selectByPriceHandler = (selectedValue) => {
+        setSortByPrice(selectedValue);
+        handleFilterChange(selectedCategories,selectedValue);
+    }
 
 
     return (
         <div className='w-full md:w-[20%]'>
             <div className='flex items-center justify-between'>
                 <h1 className='font-semibold text-lg md:text-xl'>Filter Options</h1>
-                <Select>
+                <Select onValueChange={selectByPriceHandler} >
                     <SelectTrigger>
                         <SelectValue placeholde="sort by" />
                         <SelectContent>
