@@ -4,9 +4,9 @@ import { Navigate } from "react-router-dom";
 export const ProtectedRoute = ({children}) => {
     const {isAuthenticated} = useSelector(store => store.auth);
 
-    if(!isAuthenticated){
-        return <Navigate to="/login" />
-    }
+   if (!isAuthenticated && !localStorage.getItem('token')) {
+    return <Navigate to="/login" />
+}
     return children;
 }
 
@@ -27,7 +27,7 @@ export const AdminRoute = ({children}) => {
         return <Navigate to="/login" />
     }
 
-    if(user.role !== "instructor") {
+    if(user?.role !== "instructor") {
         return <Navigate to="/" />
     }
     return children;

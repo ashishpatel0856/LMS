@@ -31,177 +31,189 @@ const Login = () => {
         data: registerData,
         error: registerError,
         isLoading: registerIsLoading,
-        isSuccess: registerIsScuccess
-    },
-    ] = useRegisterUserMutation();
+        isSuccess: registerIsSuccess  // Fixed typo: was registerIsScuccess
+    }] = useRegisterUserMutation();
 
     const [loginUser, {
         data: loginData,
         error: loginError,
         isLoading: loginIsLoading,
         isSuccess: loginIsSuccess
-    },
-    ] = useLoginUserMutation();
+    }] = useLoginUserMutation();
+    
     const navigate = useNavigate();
-
 
     const changeInputHandler = (e, type) => {
         const { name, value } = e.target;
         if (type === "signup") {
-            setSignupInput({ ...signupInput, [name]: value });
+            setSignupInput(prev => ({ ...prev, [name]: value }));
         } else {
-            setLoginInput({ ...loginInput, [name]: value });
+            setLoginInput(prev => ({ ...prev, [name]: value }));
         }
     };
-
 
     const handleRegistration = async (type) => {
         const inputData = type === "signup" ? signupInput : loginInput;
         const action = type === "signup" ? registerUser : loginUser;
-
         await action(inputData);
     };
    
     useEffect(() => {
-        if(registerIsScuccess && registerData){
-            toast.success(registerData.message || "Signup successfull.")
+        if (registerIsSuccess && registerData) {
+            toast.success(registerData.message || "Signup successful.");
+            setSignupInput({ name: "", email: "", password: "" });
         }
-        if(registerError){
-            toast.error(registerData.data.message || "Signup failed");
+        if (registerError) {
+            const errorMsg = registerError?.data?.message || registerError?.message || "Signup failed";
+            toast.error(errorMsg);
         }
-        if(loginIsSuccess && loginData){
-            toast.success(loginData.message || "login successfull.")
+        if (loginIsSuccess && loginData) {
+            toast.success(loginData.message || "Login successful.");
             navigate("/");
         }
-        if(loginError){
-            toast.error(loginData.data.message || "login failed.")
+        if (loginError) {
+            // FIXED: Use loginError instead of loginData
+            const errorMsg = loginError?.data?.message || loginError?.message || "Login failed";
+            toast.error(errorMsg);
         }
-    },[
+    }, [
         loginIsLoading,
         registerIsLoading,
         loginData,
         registerData,
         loginError,
-        registerError
-    ])
-    return (
-        <div className="flex justify-center items-center min-h-screen bg-muted mt-20">
-            <Tabs defaultValue="login" className="w-full max-w-sm">
+        registerError,
+        loginIsSuccess,
+        registerIsSuccess,  // Fixed typo
+        navigate
+    ]);
 
-                <TabsList className="grid w-full grid-cols-2 mb-4">
-                    <TabsTrigger value="login">Login</TabsTrigger>
-                    <TabsTrigger value="signup">Signup</TabsTrigger>
+    return (
+        <div className="flex justify-center items-center min-h-screen bg-muted px-4 py-8 sm:px-6 lg:px-8">
+            <Tabs defaultValue="login" className="w-full max-w-[420px] sm:max-w-[480px]">
+
+                <TabsList className="grid w-full grid-cols-2 mb-4 h-11">
+                    <TabsTrigger value="login" className="text-sm sm:text-base">Login</TabsTrigger>
+                    <TabsTrigger value="signup" className="text-sm sm:text-base">Signup</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="login">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Login to your account</CardTitle>
-                            <CardDescription>
-                                login your account after signup.
+                    <Card className="shadow-lg">
+                        <CardHeader className="p-4 sm:p-6">
+                            <CardTitle className="text-lg sm:text-xl">Login to your account</CardTitle>
+                            <CardDescription className="text-sm">
+                                Login to your account after signup.
                             </CardDescription>
                         </CardHeader>
 
-                        <CardContent>
-                            <form className="flex flex-col gap-4">
+                        <CardContent className="p-4 sm:p-6 pt-0">
+                            <form className="flex flex-col gap-3 sm:gap-4">
                                 <div className="grid gap-2">
-                                    <Label>Email</Label>
+                                    <Label className="text-sm sm:text-base">Email</Label>
                                     <Input
                                         name="email"
                                         value={loginInput.email}
                                         onChange={(e) => changeInputHandler(e, "login")}
                                         type="email"
                                         placeholder="abc@example.com"
-                                        required />
+                                        className="h-10 sm:h-11"
+                                        required 
+                                    />
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <div className="flex justify-between">
-                                        <Label>Password</Label>
-                                    </div>
+                                    <Label className="text-sm sm:text-base">Password</Label>
                                     <Input
                                         name="password"
                                         value={loginInput.password}
-                                        onChange={(e) => changeInputHandler(e, "login")} type="password"
+                                        onChange={(e) => changeInputHandler(e, "login")} 
+                                        type="password"
                                         placeholder="password"
+                                        className="h-10 sm:h-11"
                                         required
                                     />
                                 </div>
                             </form>
                         </CardContent>
 
-                        <CardFooter className="flex-col gap-2">
-                            <Button disabled={loginIsLoading} onClick={() => handleRegistration("login")} className="w-full">
-                                {
-                                    loginIsLoading ? (
-                                        <>
-                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait...
-                                        </>
-                                    ) : "Login"
-                                }
+                        <CardFooter className="flex-col gap-2 p-4 sm:p-6 pt-0">
+                            <Button 
+                                disabled={loginIsLoading} 
+                                onClick={() => handleRegistration("login")} 
+                                className="w-full h-11 sm:h-12 text-sm sm:text-base"
+                            >
+                                {loginIsLoading ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait...
+                                    </>
+                                ) : "Login"}
                             </Button>
-
                         </CardFooter>
                     </Card>
                 </TabsContent>
 
                 <TabsContent value="signup">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Create an account</CardTitle>
-                            <CardDescription>
-                                Create a new account and click signup when you are done.
+                    <Card className="shadow-lg">
+                        <CardHeader className="p-4 sm:p-6">
+                            <CardTitle className="text-lg sm:text-xl">Create an account</CardTitle>
+                            <CardDescription className="text-sm">
+                                Create a new account and click signup when you're done.
                             </CardDescription>
                         </CardHeader>
 
-                        <CardContent>
-                            <form className="flex flex-col gap-4">
+                        <CardContent className="p-4 sm:p-6 pt-0">
+                            <form className="flex flex-col gap-3 sm:gap-4">
                                 <div className="grid gap-2">
-                                    <Label>Name</Label>
+                                    <Label className="text-sm sm:text-base">Name</Label>
                                     <Input
                                         name="name"
                                         value={signupInput.name}
                                         onChange={(e) => changeInputHandler(e, "signup")}
                                         placeholder="Your name"
+                                        className="h-10 sm:h-11"
                                         required
                                     />
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label>Email</Label>
+                                    <Label className="text-sm sm:text-base">Email</Label>
                                     <Input
                                         name="email"
                                         value={signupInput.email}
                                         onChange={(e) => changeInputHandler(e, "signup")}
                                         type="email"
                                         placeholder="abc@example.com"
+                                        className="h-10 sm:h-11"
                                         required
                                     />
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label>Password</Label>
+                                    <Label className="text-sm sm:text-base">Password</Label>
                                     <Input
                                         name="password"
                                         value={signupInput.password}
                                         onChange={(e) => changeInputHandler(e, "signup")}
                                         type="password"
                                         placeholder="password"
+                                        className="h-10 sm:h-11"
                                         required
                                     />
                                 </div>
                             </form>
                         </CardContent>
 
-                        <CardFooter>
-                            <Button disabled={registerIsLoading} onClick={() => handleRegistration("signup")} className="w-full">
-                                {
-                                    registerIsLoading ? (
-                                        <>
-                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait...
-                                        </>
-                                    ) : "Signup"
-                                }
+                        <CardFooter className="p-4 sm:p-6 pt-0">
+                            <Button 
+                                disabled={registerIsLoading} 
+                                onClick={() => handleRegistration("signup")} 
+                                className="w-full h-11 sm:h-12 text-sm sm:text-base"
+                            >
+                                {registerIsLoading ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait...
+                                    </>
+                                ) : "Signup"}
                             </Button>
                         </CardFooter>
                     </Card>

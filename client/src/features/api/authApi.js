@@ -64,12 +64,13 @@ export const authApi = createApi({
             query: (formData) => ({
                 url:"/profile/update",
                 method:"PUT",
-                body:"formData",
+                body:formData,
                 credentials:"include"
             })
         })
     })
 });
+
 
 export const {
     useRegisterUserMutation,
