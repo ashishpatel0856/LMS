@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom";
 
 const Login = () => {
     const [signupInput, setSignupInput] = useState(
-        { name: "", email: "", password: "" }
+        { name: "", email: "", password: "", role: "" }
     );
     const [loginInput, setLoginInput] = useState(
         { email: "", password: "" }
@@ -31,7 +31,7 @@ const Login = () => {
         data: registerData,
         error: registerError,
         isLoading: registerIsLoading,
-        isSuccess: registerIsSuccess  // Fixed typo: was registerIsScuccess
+        isSuccess: registerIsSuccess
     }] = useRegisterUserMutation();
 
     const [loginUser, {
@@ -40,7 +40,7 @@ const Login = () => {
         isLoading: loginIsLoading,
         isSuccess: loginIsSuccess
     }] = useLoginUserMutation();
-    
+
     const navigate = useNavigate();
 
     const changeInputHandler = (e, type) => {
@@ -57,7 +57,7 @@ const Login = () => {
         const action = type === "signup" ? registerUser : loginUser;
         await action(inputData);
     };
-   
+
     useEffect(() => {
         if (registerIsSuccess && registerData) {
             toast.success(registerData.message || "Signup successful.");
@@ -72,7 +72,6 @@ const Login = () => {
             navigate("/");
         }
         if (loginError) {
-            // FIXED: Use loginError instead of loginData
             const errorMsg = loginError?.data?.message || loginError?.message || "Login failed";
             toast.error(errorMsg);
         }
@@ -84,7 +83,7 @@ const Login = () => {
         loginError,
         registerError,
         loginIsSuccess,
-        registerIsSuccess,  // Fixed typo
+        registerIsSuccess,
         navigate
     ]);
 
@@ -117,7 +116,7 @@ const Login = () => {
                                         type="email"
                                         placeholder="abc@example.com"
                                         className="h-10 sm:h-11"
-                                        required 
+                                        required
                                     />
                                 </div>
 
@@ -126,7 +125,7 @@ const Login = () => {
                                     <Input
                                         name="password"
                                         value={loginInput.password}
-                                        onChange={(e) => changeInputHandler(e, "login")} 
+                                        onChange={(e) => changeInputHandler(e, "login")}
                                         type="password"
                                         placeholder="password"
                                         className="h-10 sm:h-11"
@@ -137,9 +136,9 @@ const Login = () => {
                         </CardContent>
 
                         <CardFooter className="flex-col gap-2 p-4 sm:p-6 pt-0">
-                            <Button 
-                                disabled={loginIsLoading} 
-                                onClick={() => handleRegistration("login")} 
+                            <Button
+                                disabled={loginIsLoading}
+                                onClick={() => handleRegistration("login")}
                                 className="w-full h-11 sm:h-12 text-sm sm:text-base"
                             >
                                 {loginIsLoading ? (
@@ -151,6 +150,8 @@ const Login = () => {
                         </CardFooter>
                     </Card>
                 </TabsContent>
+
+
 
                 <TabsContent value="signup">
                     <Card className="shadow-lg">
@@ -200,13 +201,30 @@ const Login = () => {
                                         required
                                     />
                                 </div>
+
+                                <div className="grid gap-2">
+                                    <Label className="text-sm sm:text-base">
+                                        Select Role
+                                    </Label>
+
+                                    <select
+                                        name="role"
+                                        value={signupInput.role}
+                                        onChange={(e) => changeInputHandler(e, "signup")}
+                                        className="h-10 sm:h-11 border rounded-md px-3 bg-white"
+                                    >
+                                        <option value="student">Student</option>
+                                        <option value="instructor">Instructor</option>
+                                    </select>
+                                </div>
+
                             </form>
                         </CardContent>
 
                         <CardFooter className="p-4 sm:p-6 pt-0">
-                            <Button 
-                                disabled={registerIsLoading} 
-                                onClick={() => handleRegistration("signup")} 
+                            <Button
+                                disabled={registerIsLoading}
+                                onClick={() => handleRegistration("signup")}
                                 className="w-full h-11 sm:h-12 text-sm sm:text-base"
                             >
                                 {registerIsLoading ? (
