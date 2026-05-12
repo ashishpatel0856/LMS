@@ -21,14 +21,20 @@ export const AuthenticatedUser =({children} ) => {
 }
 
 
-export const AdminRoute = ({children}) => {
-    const {user,isAuthenticated} = useSelector(store => store.auth);
-    if(!isAuthenticated){
-        return <Navigate to="/login" />
+export const AdminRoute = ({ children }) => {
+    const { user, isAuthenticated } = useSelector(store => store.auth);
+
+    const token = localStorage.getItem("token");
+
+    // agar login nahi h aur token bhi nahi h
+    if (!isAuthenticated && !token) {
+        return <Navigate to="/login" />;
     }
 
-    if(user?.role !== "instructor") {
-        return <Navigate to="/" />
+    // role check
+    if (user && user?.role !== "instructor") {
+        return <Navigate to="/" />;
     }
+
     return children;
-}
+};
