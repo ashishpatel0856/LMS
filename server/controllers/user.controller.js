@@ -6,10 +6,8 @@ import { Course } from "../models/course.model.js";
 
 export const register = async (req, res) => {
     try {
-
         const { name, email, password, role } = req.body;
-
-        if (!name || !email || !password || !role) {
+        if (!name || !email || !password ) {
             return res
                 .status(400)
                 .json({
@@ -32,7 +30,7 @@ export const register = async (req, res) => {
             name,
             email,
             password: hashedPassword,
-            role
+            role: role?.trim() ? role : "student"
         });
 
         return res.status(201).json({
@@ -43,13 +41,13 @@ export const register = async (req, res) => {
     } catch (error) {
 
         console.log(error);
-
         return res.status(500).json({
             success: false,
             message: "Failed to register"
         });
     }
 };
+
 
 export const login = async (req, res) => {
     try {
