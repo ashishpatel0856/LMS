@@ -21,11 +21,11 @@ import { useNavigate } from "react-router-dom";
 
 const Login = () => {
     const [signupInput, setSignupInput] = useState({
-    name: "",
-    email: "",
-    password: "",
-    role: "student"
-});
+        name: "",
+        email: "",
+        password: "",
+        role: "student"
+    });
     const [loginInput, setLoginInput] = useState(
         { email: "", password: "" }
     );
@@ -56,27 +56,28 @@ const Login = () => {
     };
 
     const handleRegistration = async (type) => {
-    const inputData = type === "signup" ? signupInput : loginInput;
+        const inputData = type === "signup" ? signupInput : loginInput;
 
-    if (type === "signup" && !inputData.role) {
-        inputData.role = "student";
-    }
+        if (type === "signup" && !inputData.role) {
+            inputData.role = "student";
+        }
 
-    console.log("SEND:", inputData);
+        console.log("SEND:", inputData);
 
-    const action = type === "signup" ? registerUser : loginUser;
-    await action(inputData);
-};
+        const action = type === "signup" ? registerUser : loginUser;
+        await action(inputData);
+    };
 
     useEffect(() => {
         if (registerIsSuccess && registerData) {
             toast.success(registerData.message || "Signup successful.");
-setSignupInput({
-    name: "",
-    email: "",
-    password: "",
-    role: "student"
-});        }
+            setSignupInput({
+                name: "",
+                email: "",
+                password: "",
+                role: "student"
+            });
+        }
         if (registerError) {
             const errorMsg = registerError?.data?.message || registerError?.message || "Signup failed";
             toast.error(errorMsg);
@@ -221,15 +222,15 @@ setSignupInput({
                                         Select Role
                                     </Label>
 
-                                   <select
-    name="role"
-    value={signupInput.role}
-    onChange={(e) => changeInputHandler(e, "signup")}
-    className="h-10 sm:h-11 border rounded-md px-3 bg-white"
->
-    <option value="student">Student</option>
-    <option value="instructor">Instructor</option>
-</select>
+                                    <select
+                                        name="role"
+                                        value={signupInput.role}
+                                        onChange={(e) => changeInputHandler(e, "signup")}
+                                        className="h-10 sm:h-11 border rounded-md px-3 bg-white"
+                                    >
+                                        <option value="student">Student</option>
+                                        <option value="instructor">Instructor</option>
+                                    </select>
                                 </div>
 
                             </form>

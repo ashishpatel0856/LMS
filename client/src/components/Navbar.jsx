@@ -72,15 +72,12 @@ const Navbar = () => {
     }
 
     return (
-        <div className={`h-16 fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-            scrolled 
-                ? 'bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-md shadow-sm border-b border-gray-200 dark:border-gray-800' 
+        <div className={`h-16 fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
+                ? 'bg-white/95 dark:bg-[#0A0A0A]/95 backdrop-blur-md shadow-sm border-b border-gray-200 dark:border-gray-800'
                 : 'bg-white dark:bg-[#0A0A0A] border-b border-gray-200 dark:border-gray-800'
-        }`}>
+            }`}>
 
-            {/* ========== DESKTOP ========== */}
             <div className='max-w-7xl mx-auto hidden md:flex justify-between items-center h-full px-4 lg:px-6'>
-
                 {/* Logo */}
                 <Link to='/' className='flex items-center gap-2.5 group'>
                     <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg shadow-blue-500/20">
@@ -142,7 +139,7 @@ const Navbar = () => {
                                         </Link>
                                     </DropdownMenuItem>
 
-                                    <DropdownMenuItem 
+                                    <DropdownMenuItem
                                         onClick={logoutHandler}
                                         className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950/30"
                                     >
@@ -166,14 +163,14 @@ const Navbar = () => {
                         </DropdownMenu>
                     ) : (
                         <div className='flex items-center gap-2'>
-                            <Button 
-                                variant="ghost" 
+                            <Button
+                                variant="ghost"
                                 onClick={() => navigate("/login")}
                                 className="text-sm font-medium h-9 px-4"
                             >
                                 Login
                             </Button>
-                            <Button 
+                            <Button
                                 onClick={() => navigate("/login")}
                                 className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium h-9 px-5"
                             >
@@ -188,12 +185,12 @@ const Navbar = () => {
                 </div>
             </div>
 
-            {/* ========== MOBILE ========== */}
+            {/*  MOBILE */}
             <div className='flex md:hidden items-center justify-between h-full px-3 sm:px-4'>
 
                 {/* Mobile Menu */}
-                <MobileNavbar 
-                    logoutHandler={logoutHandler} 
+                <MobileNavbar
+                    logoutHandler={logoutHandler}
                     user={user}
                 />
 
@@ -219,7 +216,7 @@ const Navbar = () => {
 export default Navbar;
 
 
-// ========== MOBILE NAVBAR ==========
+//  MOBILE NAVBAR 
 const MobileNavbar = ({ logoutHandler, user }) => {
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
@@ -238,9 +235,9 @@ const MobileNavbar = ({ logoutHandler, user }) => {
     return (
         <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-                <Button 
-                    size='icon' 
-                    className="rounded-full h-9 w-9 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border-0" 
+                <Button
+                    size='icon'
+                    className="rounded-full h-9 w-9 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border-0"
                     variant="ghost"
                 >
                     <Menu size={20} className="text-gray-700 dark:text-gray-300" />
@@ -278,15 +275,15 @@ const MobileNavbar = ({ logoutHandler, user }) => {
                         </div>
                     ) : (
                         <div className="mt-5 flex gap-2">
-                            <Button 
+                            <Button
                                 onClick={() => handleNavigate("/login")}
                                 className="flex-1 bg-white text-blue-700 hover:bg-blue-50 font-semibold h-9 text-sm"
                             >
                                 Login
                             </Button>
-                            <Button 
+                            <Button
                                 onClick={() => handleNavigate("/login")}
-                                variant="outline" 
+                                variant="outline"
                                 className="flex-1 border-white/50 text-white hover:bg-white/20 h-9 text-sm"
                             >
                                 Signup
