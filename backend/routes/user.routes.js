@@ -1,14 +1,17 @@
-import express from "express";
-import { register,login, getUserProfile,logout, updatedProfile } from "../controllers/user.controller.js";
-import isAuthenticated from "../middlewares/isAuthenticated.js";
-import upload from "../utils/multer.js";
-const router = express.Router();
+import { Router } from "express";
 
-router.route("/register").post(register);
-router.route("/login").post(login);
-router.route("/logout").get(logout);
-router.route("/profile").get(isAuthenticated,getUserProfile);
+const router = Router();
+import { register, login, logout, getProfile, forgotPassword, resetPassword, changePassword, updateUser } from '../controllers/user.controller.js';
+import { isLoggedIn } from "../middleware/auth.middleware.js";
+import upload from '../middleware/multer.middleware.js'
 
-router.route("/profile/update").put(isAuthenticated,upload.single("profilePhoto"),updatedProfile);
+router.post('/register', upload.single("avatar"), register);
+router.post('/login', login);
+router.get('/logout', logout);
+router.get('/me', isLoggedIn, getProfile);
+router.post('/reset', forgotPassword);
+router.post('/reset/:resetToken', resetPassword);
+router.post('/change-password', isLoggedIn, changePassword);
+router.post('/update/:id', isLoggedIn, upload.single("avatar"), updateUser);
 
 export default router;

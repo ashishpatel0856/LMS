@@ -1,23 +1,19 @@
-import express from "express";
-import { register,login, getUserProfile,logout, updatedProfile, editCourse } from "../controllers/user.controller.js";
-import isAuthenticated from "../middlewares/isAuthenticated.js";
-import { createCourse, createLecture, editLecture, getCourseById, getCourseLecture, getCreatorCourses, getLectureById, getPublishedCourse, removeLecture, searchCourse, togglePublishCourse } from "../controllers/course.controller.js";
-import upload from "../utils/multer.js"
+import { Router } from "express";
+const router = Router();
+import { getAllCourses, getLecturesByCourseId, createCourse, updateCourse, removeCourse, addLectureToCourseById, deleteCourseLecture, updateCourseLecture } from '../controllers/course.controller.js'
+import { isLoggedIn, authorisedRoles, authorizeSubscriber } from "../middleware/auth.middleware.js";
+import upload from "../middleware/multer.middleware.js"; 
 
-const router = express.Router();
+router.route('/')
+    .get(getAllCourses)
+    .post(isLoggedIn, authorisedRoles('ADMIN'), upload.single("thumbnail"), createCourse)
+    .delete(isLoggedIn, authorisedRoles('ADMIN'), deleteCourseLecture)
+    .put(isLoggedIn, authorisedRoles('ADMIN'), upload.single("lecture"), updateCourseLecture)
 
-router.route("/").post(isAuthenticated,createCourse);
-router.route("/search").get(isAuthenticated, searchCourse);
-router.route("/published-courses").get(getPublishedCourse)
-router.route("/").get(isAuthenticated,getCreatorCourses);
-router.route("/:courseId").put(isAuthenticated, upload.single("courseThumbnail") ,editCourse);
-router.route("/:courseId").get(isAuthenticated,getCourseById);
-router.route("/:courseId/lecture").post(isAuthenticated,createLecture);
-router.route("/:courseId/lecture").get(isAuthenticated,getCourseLecture);
-router.route("/:courseId/lecture/:lectureId").post(isAuthenticated,editLecture);
-router.route("/lecture/:lectureId").delete(isAuthenticated,removeLecture);
-router.route("/lecture/:lectureId").get(isAuthenticated,getLectureById);
-router.route("/:courseId").patch(isAuthenticated,togglePublishCourse);
+router.route('/:id')
+    .get(isLoggedIn, authorizeSubscriber, getLecturesByCourseId)
+    .put(isLoggedIn, authorisedRoles("ADMIN"), upload.single("thumbnail"), updateCourse)
+    .delete(isLoggedIn, authorisedRoles('ADMIN'), removeCourse)
+    .post(isLoggedIn, authorisedRoles("ADMIN"), upload.single("lecture"), addLectureToCourseById);
 
-
-export default router;
+export default router
